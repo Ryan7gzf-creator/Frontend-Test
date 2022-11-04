@@ -1,12 +1,44 @@
 import { StatusBar } from 'expo-status-bar';
-import { StyleSheet, Text, View } from 'react-native';
+import { useEffect, useState } from "react";
+import { StyleSheet, Text, SafeAreaView, ActivityIndicator } from 'react-native';
 
 export default function App() {
+  let [isLoading, setIsLoading] = useState(true);
+  let [error, setError] = useState();
+  let [responce, setResponce] = useState();
+
+  useEffect(() => {
+    fetch("https://rickandmortyapi.com/api/character")
+        .then(res => res.json())
+        .then(
+            (result) => {
+          setResponce(result);
+          setIsLoading(false);
+        },
+          (error) => {
+            setIsLoading(false);
+            setError(error);
+          }
+        )
+  }, []);
+
+const getContent = () => {
+  if (isLoading){
+    return <ActivityIndicator size={'large'} />;
+  }
+  if (error) {
+    return <Text>{error}</Text>
+  }
+
+  console.log(responce);
+  return <Text>Character (Name): {responce["results"][0].name}</Text>;
+};
+
   return (
-    <View style={styles.container}>
-      <Text>Open up App.js to start working on your app!</Text>
+    <SafeAreaView style={styles.container}>
+      {getContent()}
       <StatusBar style="auto" />
-    </View>
+    </SafeAreaView>
   );
 }
 
