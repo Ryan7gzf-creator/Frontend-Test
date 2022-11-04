@@ -1,52 +1,39 @@
-import { StatusBar } from 'expo-status-bar';
-import { useEffect, useState } from "react";
-import { StyleSheet, Text, SafeAreaView, ActivityIndicator } from 'react-native';
+import {StyleSheet} from 'react-native';
+import {NavigationContainer} from "@react-navigation/native";
+import {createNativeStackNavigator} from "@react-navigation/native-stack";
+import Home from "./Components/Home";
+import CharacterInfo from "./Components/CharacterInfo";
+
+const Stack = createNativeStackNavigator();
 
 export default function App() {
-  let [isLoading, setIsLoading] = useState(true);
-  let [error, setError] = useState();
-  let [responce, setResponce] = useState();
 
-  useEffect(() => {
-    fetch("https://rickandmortyapi.com/api/character")
-        .then(res => res.json())
-        .then(
-            (result) => {
-          setResponce(result);
-          setIsLoading(false);
-        },
-          (error) => {
-            setIsLoading(false);
-            setError(error);
-          }
-        )
-  }, []);
+    return (
+        <NavigationContainer>
+            <Stack.Navigator>
+                <Stack.Screen
+                    name="Home"
+                    component={Home}
+                    options={{
+                        title: 'Character',
+                        headerTitleAlign: 'left'
+                    }}
+                />
+                <Stack.Screen name="Character"
+                              component={CharacterInfo}
+                              options={({route}) => ({title: route.params.name})}/>
 
-const getContent = () => {
-  if (isLoading){
-    return <ActivityIndicator size={'large'} />;
-  }
-  if (error) {
-    return <Text>{error}</Text>
-  }
+            </Stack.Navigator>
+        </NavigationContainer>
 
-  console.log(responce);
-  return <Text>Character (Name): {responce["results"][0].name}</Text>;
-};
-
-  return (
-    <SafeAreaView style={styles.container}>
-      {getContent()}
-      <StatusBar style="auto" />
-    </SafeAreaView>
-  );
+    );
 }
 
 const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-    backgroundColor: '#fff',
-    alignItems: 'center',
-    justifyContent: 'center',
-  },
+    container: {
+        flex: 1,
+        backgroundColor: '#fff',
+        alignItems: 'center',
+        justifyContent: 'center',
+    },
 });
